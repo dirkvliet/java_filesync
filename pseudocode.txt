@@ -1,0 +1,98 @@
+Client connects to running server
+
+Server stores the directory in its PWD
+Client passes in directory to sync + serverIP
+
+Client sends dirName + modifiedTime
+Server sends Exists or not
+If file exists on server && server modified last
+   update client file
+else
+   update server file
+move to next file
+
+Server sends dirName
+Client sends exists or not
+if does not exist
+   ask if would like to delete servers copy
+   if yes
+     delete server copy
+   if no
+     send server copy to client
+   if noALL
+     set noAll flag and always take servers copy
+   else {default}
+     do nothing
+move to next file
+end
+
+
+
+2 way talking:
+
+CLIENT: dirName
+Server: exists = TRUE or FALSE
+   
+if directory
+   CLIENT: VECTOR<STRING> = dirName, PATH
+   SERVER: true
+else
+   CLIENT: VECTOR<STRING> = fileName, PATH, lastModified
+   SERVER: TRUE or FALSE (update?)
+   if TRUE
+      CLIENT: SEND FILE
+      SERVER: TRUE
+   else if FALSE
+      CLIENT: TRUE
+      SERVER: SEND FILE
+      CLIENT: TRUE
+      SERVER: SEND LAST MODIFIED
+   end
+end
+SERVER: OK
+
+CLIENT: DONE
+
+// begin 2 way talking here.
+
+if EXISTS = TRUE
+   SERVER: PATH
+   CLIENT: OK
+   SERVER: TRUE or FALSE (dir)
+   if directory
+      CLIENT: TRUE or FALSE (exists)
+      if FALSE
+         SERVER: TRUE
+         CLIENT: ask user if he/she would like to delete servers copy
+                 reply Y (delete) or N (get servers copy)
+                 or D (do nothing)
+         if Y (1)
+            SERVER: delete directory
+         if N (0)
+            CLIENT: make directory
+         if D (0) (default)
+            do nothing
+         end
+      end
+   else NOT DIRECTORY
+      CLIENT: TRUE or FALSE
+      if FALSE (client does not have)
+         SERVER: TRUE
+         CLIENT: ask user if he/she would like to delete servers copy
+                 reply Y (delete) or N (get servers copy)
+                 or D (do nothing)
+         if Y (1)
+            SERVER: delete file
+         if N (0)
+            SERVER: SEND FILE
+            CLIENT: OK
+            SERVER: SEND LASTMODIFIED
+            CLIENT: OK
+         if D (2)(DEFAULT)
+            do nothing
+         end
+      end
+   end
+end
+
+SERVER: DONE
